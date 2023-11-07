@@ -10,8 +10,8 @@ app.use(cors());
 
 const port = process.env.PORT || 5000;
 
-mongoose.connect('mongodb+srv://Admin:PNhrC_PGc25pjLD@cluster0.795jlko.mongodb.net/Admin', {
-  
+
+mongoose.connect('mongodb+srv://admin:Honest2023@cluster0.ego5owt.mongodb.net/login', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   
