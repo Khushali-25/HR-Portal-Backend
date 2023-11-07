@@ -62,32 +62,6 @@ app.post('/api/register', async (req, res) => {
 });
 
 
-
-
-
-
-// app.post('/api/signin', async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     const user = await User.findOne({ email });
-//     if (user) {
-//       const passwordMatch = await bcrypt.compare(password, user.password);
-//       if (passwordMatch) {
-//         res.send({ status: 'ok', user: user });
-//       } else {
-//         res.send({ error: 'Invalid email or password' });
-//       }
-//     } else {
-//       res.send({ error: 'User not found' });
-//     }
-//   } catch (error) {
-//     res.send({ status: 'error' });
-//   }
-// });
-
-
-
 app.post('/api/signin', async (req, res) => {
   const { email, password } = req.body;
 
