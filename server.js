@@ -10,9 +10,11 @@ app.use(cors());
 
 const port = process.env.PORT || 5000;
 
-mongoose.connect('mongodb+srv://admin:Honest2023@cluster0.ego5owt.mongodb.net/Admin', {
+mongoose.connect('mongodb+srv://Admin:PNhrC_PGc25pjLD@cluster0.795jlko.mongodb.net/Admin', {
+  
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  
 });
 
 const db = mongoose.connection;
@@ -23,7 +25,7 @@ const UserDetailsSchema = new mongoose.Schema({
   password: String,
 });
 
-const User = mongoose.model('UserInfo', UserDetailsSchema);
+const User = mongoose.model('Admin', UserDetailsSchema);
 
 db.on('error', (error) => {
   console.error('MongoDB connection error:', error);
@@ -58,3 +60,51 @@ app.post('/api/register', async (req, res) => {
     res.send({ status: 'error' });
   }
 });
+
+
+
+
+
+
+// app.post('/api/signin', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   try {
+//     const user = await User.findOne({ email });
+//     if (user) {
+//       const passwordMatch = await bcrypt.compare(password, user.password);
+//       if (passwordMatch) {
+//         res.send({ status: 'ok', user: user });
+//       } else {
+//         res.send({ error: 'Invalid email or password' });
+//       }
+//     } else {
+//       res.send({ error: 'User not found' });
+//     }
+//   } catch (error) {
+//     res.send({ status: 'error' });
+//   }
+// });
+
+
+
+app.post('/api/signin', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (passwordMatch) {
+        res.status(200).send({ status: 'ok', user: user });
+      } else {
+        res.status(401).send({ error: 'Invalid email or password' });
+      }
+    } else {
+      res.status(404).send({ error: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).send({ status: 'error' });
+  }
+});
+
