@@ -31,6 +31,15 @@ const UserDetailsSchema = new mongoose.Schema({
 
 
 
+
+
+
+
+
+
+
+
+
 const User = mongoose.model('companyAdmin', UserDetailsSchema);
 
 
@@ -108,7 +117,12 @@ app.post('/api/employees', async (req, res) => {
   const newEmployeeData = req.body;
 
   try {
-    const newEmployee = new Employee(newEmployeeData);
+    // Generate a unique ID using MongoDB
+    const newEmployee = new Employee({
+      ...newEmployeeData,
+      _id: new mongoose.Types.ObjectId(),
+    });
+
     await newEmployee.save();
     return res.status(201).json({ status: 'ok' });
   } catch (error) {
@@ -118,6 +132,27 @@ app.post('/api/employees', async (req, res) => {
 
 
 
+
+
+
+// Create an API endpoint to update employee information
+app.put('/api/updateemployees/:employeeId', async (req, res) => {
+  const employeeId = req.params.employeeId;
+  const updatedEmployeeData = req.body;
+
+  try {
+    // Find the employee by ID and update their information
+    const updatedEmployee = await Employee.findByIdAndUpdate(employeeId, updatedEmployeeData, { new: true });
+
+    if (!updatedEmployee) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+
+    return res.status(200).json(updatedEmployee);
+  } catch (error) {
+    return res.status(500).json({ status: 'error' });
+  }
+});
 
 
 
