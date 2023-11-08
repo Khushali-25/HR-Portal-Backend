@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
 const bodyParser = require('body-parser'); 
+const Employee = require('./employee');
 
 const app = express();
 app.use(bodyParser.json());
@@ -26,6 +27,10 @@ const UserDetailsSchema = new mongoose.Schema({
 });
 
 
+
+
+
+
 const User = mongoose.model('companyAdmin', UserDetailsSchema);
 
 
@@ -44,11 +49,21 @@ app.listen(port, () => {
 app.post('/api/register', async (req, res) => {
   const { fname, email, password } = req.body;
 
+  // Check if password is provided and it's a non-empty string
+  if (!password || typeof password !== 'string' || password.trim() === '') {
+    return res.status(400).json({ error: 'Password is required and must be a non-empty string' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+  }
+
   const encryptedPassword = await bcrypt.hash(password, 10);
+
   try {
     const oldUser = await User.findOne({ email });
     if (oldUser) {
-      res.send({ error: 'User already exists' });
+      return res.status(400).json({ error: 'User already exists' });
     } else {
       const newUser = new User({
         email,
@@ -56,12 +71,14 @@ app.post('/api/register', async (req, res) => {
         fname,
       });
       await newUser.save();
-      res.send({ status: 'ok' });
+      return res.status(201).json({ status: 'ok' });
     }
   } catch (error) {
-    res.send({ status: 'error' });
+    return res.status(500).json({ status: 'error' });
   }
 });
+
+
 
 
 app.post('/api/signin', async (req, res) => {
@@ -84,26 +101,22 @@ app.post('/api/signin', async (req, res) => {
   }
 });
 
-app.post('/api/employees', async (req, res) => {
-  const employeeData = req.body;
 
-  const encryptedPassword = await bcrypt.hash(employeeData.companyPassword, 10);
+
+// Create an API endpoint to add employees
+app.post('/api/employees', async (req, res) => {
+  const newEmployeeData = req.body;
+
   try {
-    const oldEmployee = await Employee.findOne({ companyEmail: employeeData.companyEmail });
-    if (oldEmployee) {
-      res.send({ error: 'Employee already exists' });
-    } else {
-      const newEmployee = new Employee({
-        ...employeeData,
-        companyPassword: encryptedPassword,
-      });
-      await newEmployee.save();
-      res.send({ status: 'ok' });
-    }
+    const newEmployee = new Employee(newEmployeeData);
+    await newEmployee.save();
+    return res.status(201).json({ status: 'ok' });
   } catch (error) {
-    res.send({ status: 'error' });
+    return res.status(500).json({ status: 'error' });
   }
 });
+
+
 
 
 
