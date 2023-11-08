@@ -7,8 +7,8 @@ const UserDetailsSchema = new mongoose.Schema(
     password: String,
   },
   {
-    collection: "Admin",
+    collection: "companyAdmin",
   }
 );
 
-module.exports = mongoose.model("Admin", UserDetailsSchema);
+module.exports = mongoose.model("companyAdmin", UserDetailsSchema);

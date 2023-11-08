@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const cors = require('cors');
-const bodyParser = require('body-parser'); // Add this import
+const bodyParser = require('body-parser'); 
 
 const app = express();
 app.use(bodyParser.json());
@@ -11,7 +11,7 @@ app.use(cors());
 const port = process.env.PORT || 5000;
 
 
-mongoose.connect('mongodb+srv://admin:Honest2023@cluster0.ego5owt.mongodb.net/login', {
+mongoose.connect('mongodb+srv://admin:Honest2023@cluster0.ego5owt.mongodb.net/WindsonPayroll', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   
@@ -25,7 +25,9 @@ const UserDetailsSchema = new mongoose.Schema({
   password: String,
 });
 
-const User = mongoose.model('Admin', UserDetailsSchema);
+
+const User = mongoose.model('companyAdmin', UserDetailsSchema);
+
 
 db.on('error', (error) => {
   console.error('MongoDB connection error:', error);
@@ -81,4 +83,43 @@ app.post('/api/signin', async (req, res) => {
     res.status(500).send({ status: 'error' });
   }
 });
+
+app.post('/api/employees', async (req, res) => {
+  const employeeData = req.body;
+
+  const encryptedPassword = await bcrypt.hash(employeeData.companyPassword, 10);
+  try {
+    const oldEmployee = await Employee.findOne({ companyEmail: employeeData.companyEmail });
+    if (oldEmployee) {
+      res.send({ error: 'Employee already exists' });
+    } else {
+      const newEmployee = new Employee({
+        ...employeeData,
+        companyPassword: encryptedPassword,
+      });
+      await newEmployee.save();
+      res.send({ status: 'ok' });
+    }
+  } catch (error) {
+    res.send({ status: 'error' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
